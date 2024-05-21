@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
+import logo from './img/baskethoop.png';
+import ball from './img/ball.png'
 
 function BasqueteGame() {
   const [pontuacao, altPontuacao] = useState(0);
@@ -53,14 +55,14 @@ function BasqueteGame() {
   const handleShoot = (start, end) => {
     const deltaX = end.x - start.x;
     const deltaY = end.y - start.y;
-    const velocityX = deltaX / 20; // Ajuste a escala de velocidade conforme necessário
-    const velocityY = deltaY / 20; // Ajuste a escala de velocidade conforme necessário
+    const velocityX = deltaX / 50;  
+    const velocityY = deltaY / 50;  //ajustar velocidade de arremesso
 
     const updatePosition = (x, y, velX, velY) => {
       altBolaposicao({ x, y });
 
       // Verifica se a bola acertou a cesta
-      if (Math.abs(x - cestaPosicao.x) < 5 && Math.abs(y - cestaPosicao.y) < 5) {
+      if (Math.abs(x - cestaPosicao.x) < 10 && Math.abs(y - cestaPosicao.y) < 10) {
         altPontuacao(prevPontuacao => prevPontuacao + 1);
         cancelAnimationFrame(animationFrameId.current);
         altBolaposicao({ x: 45, y: 90 });
@@ -112,14 +114,14 @@ function BasqueteGame() {
 function GameBoard({ bolaposicao, cestaPosicao, handleMouseDown, handleTouchStart }) {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <img
-        src="/basketball.png"
-        alt="Cesta"
+      <img  
+          src={logo}
+          alt="Cesta"
         className="basket"
         style={{ left: `${cestaPosicao.x}%`, top: `${cestaPosicao.y}%` }}
       />
       <img
-        src="/ball.png"
+        src={ball}
         alt="Bola"
         className="ball"
         style={{ left: `${bolaposicao.x}%`, top: `${bolaposicao.y}%` }}
