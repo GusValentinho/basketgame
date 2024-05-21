@@ -6,22 +6,29 @@ import MenuScreen from "./pages/menu";
 
 function BasqueteGame() {
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // verifica se o menu está aberto ou fechado
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Verifica se o menu está aberto ou fechado
   const [pontuacao, setPontuacao] = useState(0);
   const [bolaposicao, setBolaposicao] = useState({ x: 45, y: 90 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 });
-  const cestaPosicao = { x: 45, y: 10 }; // posição fixa da cesta
+  const [initialBallPosition, setInitialBallPosition] = useState({ x: 45, y: 90 });
+  const cestaPosicao = { x: 45, y: 10 }; // Posição fixa da cesta
   const animationFrameId = useRef(null);
 
   const handleMouseDown = (event) => {
+    event.preventDefault();
     setIsDragging(true);
     setDragStartPosition({ x: event.clientX, y: event.clientY });
+    setInitialBallPosition(bolaposicao);
   };
 
   const handleMouseMove = (event) => {
     if (isDragging) {
-      setBolaposicao({ x: event.clientX, y: event.clientY });
+      event.preventDefault();
+      setBolaposicao({
+        x: initialBallPosition.x + (event.clientX - dragStartPosition.x) / window.innerWidth * 100,
+        y: initialBallPosition.y + (event.clientY - dragStartPosition.y) / window.innerHeight * 100,
+      });
     }
   };
 
@@ -35,14 +42,20 @@ function BasqueteGame() {
 
   const handleTouchStart = (event) => {
     const touch = event.touches[0];
+    event.preventDefault();
     setIsDragging(true);
     setDragStartPosition({ x: touch.clientX, y: touch.clientY });
+    setInitialBallPosition(bolaposicao);
   };
 
   const handleTouchMove = (event) => {
     if (isDragging) {
       const touch = event.touches[0];
-      setBolaposicao({ x: touch.clientX, y: touch.clientY });
+      event.preventDefault();
+      setBolaposicao({
+        x: initialBallPosition.x + (touch.clientX - dragStartPosition.x) / window.innerWidth * 100,
+        y: initialBallPosition.y + (touch.clientY - dragStartPosition.y) / window.innerHeight * 100,
+      });
     }
   };
 
@@ -58,8 +71,8 @@ function BasqueteGame() {
   const handleShoot = (start, end) => {
     const deltaX = end.x - start.x;
     const deltaY = end.y - start.y;
-    const velocityX = deltaX / 50;  
-    const velocityY = deltaY / 50;  // ajustar velocidade de arremesso
+    const velocityX = deltaX / 50;
+    const velocityY = deltaY / 50; // Ajustar velocidade de arremesso
 
     const updatePosition = (x, y, velX, velY) => {
       setBolaposicao({ x, y });
@@ -100,7 +113,10 @@ function BasqueteGame() {
     };
   }, [isDragging]);
 
-   
+  const resetGame = () => {
+    setPontuacao(0);
+    setBolaposicao({ x: 45, y: 90 });
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
