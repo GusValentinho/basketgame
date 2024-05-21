@@ -111,13 +111,15 @@ function BasqueteGame() {
   );
 }
 
+
+//renderizando objetos
 function GameBoard({ bolaposicao, cestaPosicao, handleMouseDown, handleTouchStart }) {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <img  
           src={logo}
           alt="Cesta"
-        className="basket"
+        className="basket" 
         style={{ left: `${cestaPosicao.x}%`, top: `${cestaPosicao.y}%` }}
       />
       <img
