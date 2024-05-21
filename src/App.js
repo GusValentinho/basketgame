@@ -12,7 +12,7 @@ function BasqueteGame() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 });
   const [initialBallPosition, setInitialBallPosition] = useState({ x: 45, y: 90 });
-  const cestaPosicao = { x: 45, y: 10 }; // Posição fixa da cesta
+  const [cestaPosicao, setCestaPosicao] = useState({ x: 45, y: 10 }); // Posição inicial da cesta
   const animationFrameId = useRef(null);
 
   const handleMouseDown = (event) => {
@@ -77,11 +77,23 @@ function BasqueteGame() {
     const updatePosition = (x, y, velX, velY) => {
       setBolaposicao({ x, y });
 
-      // Verifica se a bola acertou a cesta
-      if (Math.abs(x - cestaPosicao.x) < 10 && Math.abs(y - cestaPosicao.y) < 10) {
+      // Verifica se a bola acertou exatamente no meio da cesta (ajustando a precisão)
+      const cestaWidth = 5; // Largura da cesta em porcentagem
+      const cestaMiddleX = cestaPosicao.x;
+      const cestaMargin = cestaWidth / 1; // Margem de acerto no meio da cesta
+
+      if (Math.abs(x - cestaMiddleX) < cestaMargin && Math.abs(y - cestaPosicao.y) < 2) {
         setPontuacao(prevPontuacao => prevPontuacao + 1);
         cancelAnimationFrame(animationFrameId.current);
         setBolaposicao({ x: 45, y: 90 });
+
+        // Define uma nova posição aleatória para a cesta
+        const newCestaPosicao = {
+          x: Math.random() * 80 + 10, // Posição aleatória no eixo x (entre 10% e 90%)
+          y: Math.random() * 30 + 10 // Posição aleatória no eixo y (entre 10% e 40%)
+        };
+        setCestaPosicao(newCestaPosicao);
+
         return;
       }
 
