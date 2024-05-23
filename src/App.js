@@ -82,7 +82,15 @@ function BasqueteGame() {
       const cestaMiddleX = cestaPosicao.x;
       const cestaMargin = cestaWidth / 1; // Margem de acerto no meio da cesta
 
-      if (Math.abs(x - cestaMiddleX) < cestaMargin && Math.abs(y - cestaPosicao.y) < 2) {
+      if (Math.abs(x - cestaMiddleX) ) {
+        const newScore = pontuacao  ;
+        setPontuacao(newScore);
+
+        if (newScore > highScore) {
+          setHighScore(newScore); 
+        }}
+
+      if (Math.abs(x - cestaMiddleX) < cestaMargin && Math.abs(y - cestaPosicao.y) < 10) {
         setPontuacao(prevPontuacao => prevPontuacao + 1);
         cancelAnimationFrame(animationFrameId.current);
         setBolaposicao({ x: 45, y: 90 });
@@ -111,7 +119,18 @@ function BasqueteGame() {
     updatePosition(bolaposicao.x, bolaposicao.y, velocityX, velocityY);
   };
 
+  const [highScore, setHighScore] = useState(0);
+
+  useEffect(()=>{
+    const storeHighStore = localStorage.getItem('highScore');
+  if(storeHighStore){
+    setHighScore(parseInt(storeHighStore, 10));
+  } 
+  }, []);
+
+
   useEffect(() => {
+    localStorage.setItem('highScore', highScore);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('touchmove', handleTouchMove);
@@ -123,7 +142,7 @@ function BasqueteGame() {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isDragging]);
+  }, [isDragging, highScore]);
 
   const resetGame = () => {
     setPontuacao(0);
@@ -139,6 +158,7 @@ function BasqueteGame() {
     setIsMenuOpen(false);
   };
 
+ 
   return (
     <div id="game-container">
       {isGameStarted ? (
@@ -147,7 +167,9 @@ function BasqueteGame() {
             <MenuScreen onStartGame={handleStartGame} />
           ) : (
             <>
-              <GameBoard bolaposicao={bolaposicao} cestaPosicao={cestaPosicao} handleMouseDown={handleMouseDown} handleTouchStart={handleTouchStart} />
+              <GameBoard bolaposicao={bolaposicao} cestaPosicao={cestaPosicao} handleMouseDown={handleMouseDown} 
+              handleTouchStart={handleTouchStart} />
+              <HighScore highScore={highScore}/>
               <Pontuacao pontuacao={pontuacao} />
               <Controles toggleMenu={toggleMenu} />
             </>
@@ -184,6 +206,10 @@ function GameBoard({ bolaposicao, cestaPosicao, handleMouseDown, handleTouchStar
 
 function Pontuacao({ pontuacao }) {
   return <div style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '1.5rem' }}>Pontos: {pontuacao}</div>;
+}
+
+function HighScore({ highScore }) {
+  return <div style={{ position: 'absolute', top: '30px', right: '10px', fontSize: '1.5rem' }}>High Score: {highScore}</div>;
 }
 
 function Controles({ toggleMenu }) {
