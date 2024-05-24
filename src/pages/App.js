@@ -2,18 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import logo from '../img/baskethoop.png';
 import ball from '../img/ball.png';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
 import MenuScreen from "../menu";
+import ToggleMenu from '../pages/togglemenu'; // Importe o novo componente ToggleMenu
 
 function BasqueteGame() {
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Verifica se o menu está aberto ou fechado
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pontuacao, setPontuacao] = useState(0);
   const [bolaposicao, setBolaposicao] = useState({ x: 45, y: 90 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 });
   const [initialBallPosition, setInitialBallPosition] = useState({ x: 45, y: 90 });
-  const [cestaPosicao, setCestaPosicao] = useState({ x: 45, y: 10 }); // Posição inicial da cesta
+  const [cestaPosicao, setCestaPosicao] = useState({ x: 45, y: 10 });
   const animationFrameId = useRef(null);
 
   const handleMouseDown = (event) => {
@@ -73,44 +73,42 @@ function BasqueteGame() {
     const deltaX = end.x - start.x;
     const deltaY = end.y - start.y;
     const velocityX = deltaX / 50;
-    const velocityY = deltaY / 50; // Ajustar velocidade de arremesso
+    const velocityY = deltaY / 50;
 
     const updatePosition = (x, y, velX, velY) => {
       setBolaposicao({ x, y });
 
-      // Verifica se a bola acertou exatamente no meio da cesta (ajustando a precisão)
-      const cestaWidth = 5; // Largura da cesta em porcentagem
+      const cestaWidth = 5;
       const cestaMiddleX = cestaPosicao.x;
-      const cestaMargin = cestaWidth / 1; // Margem de acerto no meio da cesta
+      const cestaMargin = cestaWidth / 1;
 
-      if (Math.abs(x - cestaMiddleX) ) {
-        const newScore = pontuacao  ;
+      if (Math.abs(x - cestaMiddleX)) {
+        const newScore = pontuacao;
         setPontuacao(newScore);
 
         if (newScore > highScore) {
-          setHighScore(newScore); 
-        }}
+          setHighScore(newScore);
+        }
+      }
 
       if (Math.abs(x - cestaMiddleX) < cestaMargin && Math.abs(y - cestaPosicao.y) < 10) {
         setPontuacao(prevPontuacao => prevPontuacao + 1);
         cancelAnimationFrame(animationFrameId.current);
         setBolaposicao({ x: 45, y: 90 });
 
-        // Define uma nova posição aleatória para a cesta
         const newCestaPosicao = {
-          x: Math.random() * 80 + 10, // Posição aleatória no eixo x (entre 10% e 90%)
-          y: Math.random() * 30 + 10 // Posição aleatória no eixo y (entre 10% e 40%)
+          x: Math.random() * 80 + 10,
+          y: Math.random() * 30 + 10
         };
         setCestaPosicao(newCestaPosicao);
 
         return;
       }
 
-      // Verifica se a bola saiu dos limites
       if (y > 100 || x < 0 || x > 100 || y < 0) {
         cancelAnimationFrame(animationFrameId.current);
         setBolaposicao({ x: 45, y: 90 });
-        setPontuacao(0); // Zera a pontuação caso a bola erre a cesta
+        setPontuacao(0);
         return;
       }
 
@@ -122,13 +120,12 @@ function BasqueteGame() {
 
   const [highScore, setHighScore] = useState(0);
 
-  useEffect(()=>{
+  useEffect(() => {
     const storeHighStore = localStorage.getItem('highScore');
-  if(storeHighStore){
-    setHighScore(parseInt(storeHighStore, 10));
-  } 
+    if (storeHighStore) {
+      setHighScore(parseInt(storeHighStore, 10));
+    }
   }, []);
-
 
   useEffect(() => {
     localStorage.setItem('highScore', highScore);
@@ -159,23 +156,23 @@ function BasqueteGame() {
     setIsMenuOpen(false);
   };
 
- 
+  const handleExitGame = () => {
+    setIsGameStarted(false);
+    setIsMenuOpen(false);
+  };
+
   return (
     <div id="game-container">
       {isGameStarted ? (
         <>
           {isMenuOpen ? (
-            <MenuScreen onStartGame={handleStartGame} />
+            <ToggleMenu onExit={handleExitGame} />
           ) : (
             <>
-               
-                  <GameBoard bolaposicao={bolaposicao} cestaPosicao={cestaPosicao} handleMouseDown={handleMouseDown} 
-              handleTouchStart={handleTouchStart} />
-              <HighScore highScore={highScore}/>
+              <GameBoard bolaposicao={bolaposicao} cestaPosicao={cestaPosicao} handleMouseDown={handleMouseDown} handleTouchStart={handleTouchStart} />
+              <HighScore highScore={highScore} />
               <Pontuacao pontuacao={pontuacao} />
-              <Controles toggleMenu={toggleMenu} />
-              
-                 
+              <Controles toggleMenu={toggleMenu}   />
             </>
           )}
         </>
@@ -186,14 +183,13 @@ function BasqueteGame() {
   );
 }
 
-// Renderizando objetos
 function GameBoard({ bolaposicao, cestaPosicao, handleMouseDown, handleTouchStart }) {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <img  
+      <img
         src={logo}
         alt="Cesta"
-        className="basket" 
+        className="basket"
         style={{ left: `${cestaPosicao.x}%`, top: `${cestaPosicao.y}%` }}
       />
       <img
@@ -218,7 +214,7 @@ function HighScore({ highScore }) {
 
 function Controles({ toggleMenu }) {
   return (
-    <div style={{ position: 'absolute', bottom: '5px', left: '2%', transform: 'translateX(-5%)', borderRadius:'rounded' }}>
+    <div style={{ position: 'absolute', bottom: '5px', left: '2%', transform: 'translateX(-5%)', borderRadius: 'rounded' }}>
       <button onClick={toggleMenu} style={{ padding: '10px 20px', fontSize: '1rem' }}>Abrir Menu</button>
     </div>
   );
