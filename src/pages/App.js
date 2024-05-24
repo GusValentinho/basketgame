@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
-import logo from './img/baskethoop.png';
-import ball from './img/ball.png';
-import MenuScreen from "./pages/menu";
+import logo from '../img/baskethoop.png';
+import ball from '../img/ball.png';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import MenuScreen from "../menu";
 
 function BasqueteGame() {
   const [isGameStarted, setIsGameStarted] = useState(false);
@@ -167,11 +168,14 @@ function BasqueteGame() {
             <MenuScreen onStartGame={handleStartGame} />
           ) : (
             <>
-              <GameBoard bolaposicao={bolaposicao} cestaPosicao={cestaPosicao} handleMouseDown={handleMouseDown} 
+               
+                  <GameBoard bolaposicao={bolaposicao} cestaPosicao={cestaPosicao} handleMouseDown={handleMouseDown} 
               handleTouchStart={handleTouchStart} />
               <HighScore highScore={highScore}/>
               <Pontuacao pontuacao={pontuacao} />
               <Controles toggleMenu={toggleMenu} />
+              
+                 
             </>
           )}
         </>
